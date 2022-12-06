@@ -23,5 +23,19 @@ CREATE TABLE github_users (
 
 CREATE TABLE posts (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  detail VARCHAR
+  detail VARCHAR(255) NOT NULL,
+  user_id BIGINT,
+  FOREIGN KEY (user_id) REFERENCES github_users(id)
 );
+
+INSERT INTO 
+  posts (detail)
+VALUES
+  ('this is a mock post!'),
+  ('this is a mock post! this is a mock post!'),
+  ('this is a mock post! this is a mock post! this is a mock post!'),
+  ('this is a mock post! this is a mock post! this is a mock post! this is a mock post!'),
+  ('this is a mock post! this is a mock post! this is a mock post! this is a mock post! this is a mock post!'),
+  ('this is a mock post! this is a mock post! this is a mock post! this is a mock post! this is a mock post!this is a mock post!'),
+  ('this is a mock post! this is a mock post! this is a mock post! this is a mock post! this is a mock post!this is a mock post!this is a mock post!'),
+  ('this is a mock post! this is a mock post! this is a mock post! this is a mock post! this is a mock post!this is a mock post!this is a mock post! this is a mock post!');
