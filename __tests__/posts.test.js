@@ -2,7 +2,6 @@ const pool = require('../lib/utils/pool.js');
 const setup = require('../data/setup.js');
 const request = require('supertest');
 const app = require('../lib/app.js');
-// const { agent } = require('supertest');
 
 jest.mock('../lib/services/github');
 
@@ -36,10 +35,52 @@ describe('posts routes', () => {
     `);
   });
 
-  it('POST /api/v1/posts should not allow posts > 255 char', async () => {
+  it('POST /api/v1/posts should not allow posts over 255 char long', async () => {
     const agent = request.agent(app);
     await agent.get('/api/v1/github/callback?code=42').redirects(1);
     const resp = await agent.post('/api/v1/posts').send(bigMockPost);
     expect(resp.status).toBe(400, 'post exceeds 255 character limit!');
+  });
+
+  it('GET /api/v1/posts should return a list of all posts for all users', async () => {
+    const agent = request.agent(app);
+    await agent.get('/api/v1/github/callback?code=42').redirects(1);
+    const resp = await agent.get('/api/v1/posts');
+    expect(resp.body).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "detail": "this is a mock post!",
+          "id": "1",
+        },
+        Object {
+          "detail": "this is a mock post! this is a mock post!",
+          "id": "2",
+        },
+        Object {
+          "detail": "this is a mock post! this is a mock post! this is a mock post!",
+          "id": "3",
+        },
+        Object {
+          "detail": "this is a mock post! this is a mock post! this is a mock post! this is a mock post!",
+          "id": "4",
+        },
+        Object {
+          "detail": "this is a mock post! this is a mock post! this is a mock post! this is a mock post! this is a mock post!",
+          "id": "5",
+        },
+        Object {
+          "detail": "this is a mock post! this is a mock post! this is a mock post! this is a mock post! this is a mock post!this is a mock post!",
+          "id": "6",
+        },
+        Object {
+          "detail": "this is a mock post! this is a mock post! this is a mock post! this is a mock post! this is a mock post!this is a mock post!this is a mock post!",
+          "id": "7",
+        },
+        Object {
+          "detail": "this is a mock post! this is a mock post! this is a mock post! this is a mock post! this is a mock post!this is a mock post!this is a mock post! this is a mock post!",
+          "id": "8",
+        },
+      ]
+    `);
   });
 });
