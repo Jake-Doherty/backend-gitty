@@ -21,6 +21,7 @@ describe('github auth', () => {
     // trying again
     // trying again why not
     // trying again why not^2
+    // trying again why not^2
     const res = await agent(app).get('/api/v1/github/login');
     console.log(res.header.location);
 
