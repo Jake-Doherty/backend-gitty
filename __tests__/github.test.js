@@ -2,6 +2,7 @@ const pool = require('../lib/utils/pool');
 const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
+const { agent } = require('supertest');
 
 jest.mock('../lib/services/github');
 
@@ -14,13 +15,14 @@ describe('github auth', () => {
     pool.end();
   });
 
-  it('/api/v1/github/login should redirect to the github oauth page', async () => {
+  it('GET /api/v1/github/login should redirect to the github oauth page', async () => {
     const res = await request(app).get('/api/v1/github/login');
     expect(res.header.location).toMatch(
       /https:\/\/github.com\/login\/oauth\/authorize\?client_id=[\w\d]+&scope=user&redirect_uri=http:\/\/localhost:7890\/api\/v1\/github\/callback/i
     );
   });
-  it('/api/v1/github/callback should login users and redirect to dashboard', async () => {
+
+  it('GET /api/v1/github/callback should login users and redirect to dashboard', async () => {
     const res = await request
       .agent(app)
       .get('/api/v1/github/callback?code=42')
@@ -33,5 +35,17 @@ describe('github auth', () => {
       iat: expect.any(Number),
       exp: expect.any(Number),
     });
+  });
+
+  it('DELETE /api/v1/github should log out current user', async () => {
+    const loggedIn = await agent(app).get('/api/v1/github/login');
+
+    const deleteSession = await agent(app).delete('/api/v1/github');
+
+    const signedOut = await agent(app).get('/api/v1/github/dashboard');
+
+    expect(loggedIn.status).toBe(302);
+    expect(deleteSession.status).toBe(204);
+    expect(signedOut.status).toBe(401);
   });
 });
