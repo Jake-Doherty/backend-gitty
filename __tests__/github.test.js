@@ -19,11 +19,13 @@ describe('github auth', () => {
     // this test is passing locally but failed on last push. trying again
     // trying again
     // trying again
+    // trying again why not
     const res = await agent(app).get('/api/v1/github/login');
+    const redirectURL = res.header.location;
     console.log(res.header.location);
 
-    expect(res.header.location).toMatch(
-      /https:\/\/github.com\/login\/oauth\/authorize\?client_id=[\w\d]+&scope=user&redirect_uri=http:\/\/localhost:7890\/api\/v1\/github\/callback/
+    expect(redirectURL).toMatch(
+      /https:\/\/github.com\/login\/oauth\/authorize\?client_id=[\w\d]+&scope=user&redirect_uri=http:\/\/localhost:7890\/api\/v1\/github\/callback/i
     );
   });
 
