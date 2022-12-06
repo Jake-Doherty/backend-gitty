@@ -21,13 +21,10 @@ describe('github auth', () => {
     // trying again
     // trying again why not
     // trying again why not^2
-    // trying again why not^3
-    const res = await request(app).get('/api/v1/github/login');
-    const URL = await res.header.location;
+    const res = await agent(app).get('/api/v1/github/login');
+    console.log(res.header.location);
 
-    console.log(URL);
-
-    expect(URL).toMatch(
+    expect(res.header.location).toMatch(
       /https:\/\/github.com\/login\/oauth\/authorize\?client_id=[\w\d]+&scope=user&redirect_uri=http:\/\/localhost:7890\/api\/v1\/github\/callback/i
     );
   });
